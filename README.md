@@ -53,13 +53,29 @@ These appear only when they're relevant — usually as a one-line, ignorable foo
 
 ## How to use it
 
-> [ANDREW — fill in the real load steps per host; these are placeholders]
+The skill is one file — [`SKILL.md`](./SKILL.md), about 56,000 characters. That's too big for the "instructions" box on most assistants (Claude Projects and Custom GPTs both cap it near 8,000 characters), so you load the skill as a **reference/knowledge file** and point the assistant at it. Pasting it into a single chat also works for a quick try.
 
-- **Claude:** [skill-load / project-instructions steps]
-- **Custom GPT:** [paste `SKILL.md` into the instructions field]
-- **Anywhere else:** paste the contents of [`SKILL.md`](./SKILL.md) at the top of your chat.
+**Claude — recommended, persists across chats**
 
-Controls you can type anytime:
+1. Create a Project (Claude Pro or Team).
+2. Upload `SKILL.md` to the project's **Knowledge**.
+3. In the project's **Custom instructions** box, add one line:
+   > *Follow the PROMPT_MOGGING skill in this project's knowledge. Apply its on-load contract (§0A) at the start of each chat.*
+4. Every chat you start inside the project now runs the skill. (The instructions box is small — ~8k characters — which is exactly why the skill lives in Knowledge and the box just points to it.)
+
+**Custom GPT**
+
+1. In the GPT editor, open the **Configure** tab.
+2. Upload `SKILL.md` under **Knowledge**. (The Instructions field caps at 8,000 characters — too small for the full skill.)
+3. In **Instructions**, add:
+   > *Follow the attached PROMPT_MOGGING SKILL.md, including its on-load contract. Use the neutral wrapper labels.*
+4. Save. (If Code Interpreter is enabled, users can download the knowledge file — fine here, since the skill is open source anyway.)
+
+**Any chat, zero setup — Claude, ChatGPT, or other**
+
+Paste the contents of `SKILL.md` at the top of a new conversation. It works immediately but doesn't carry over — you re-paste for each new chat. Best for trying the skill before committing to a Project or GPT.
+
+**Controls you can type anytime**
 
 ```
 skill off · skill on · chill · play / riff · "be more blunt" · "ease up"
@@ -94,7 +110,7 @@ If something grates, misfires, or nags, that's the most useful feedback there is
 
 The internal version of this skill uses deliberately ridiculous slang — "mogging," "no-pilling," "botmaxx" and friends — borrowed from the two essays it's based on. It's a joke that turned out to be load-bearing: the silly names made the techniques easy to reason about while building it. This user-facing version uses plain labels instead. If you enjoy internet-brainrot taxonomy, the originals are a fun read; if not, you lose nothing by ignoring them.
 
-- [40 Techniques for Mogging LLMs Without Getting Cooked]([ ](https://medium.com/@andrew.gregovic/40-techniques-for-mogging-llms-without-getting-cooked-feac634cd684))
+- [40 Techniques for Mogging LLMs Without Getting Cooked](https://medium.com/@andrew.gregovic/40-techniques-for-mogging-llms-without-getting-cooked-feac634cd684)
 - [Prompt Engineering Considered Harmful, Lmao](https://medium.com/@andrew.gregovic/prompt-engineering-considered-harmful-lmao-f3325bed0ccf) 
 
 ## License & contributing
