@@ -1,73 +1,132 @@
-# Prompt Mogging
+# PROMPT_MOGGING
 
-A portable chat skill that puts the model into an **adversarial-but-constructive** stance for exploratory, strategic, and framing work — so "skill on" actually changes how the model answers, instead of silently falling back to generic assistant prose.
+*A loadable chat skill that turns an AI assistant into a sharper thinking partner for open-ended work — and is honest enough to tell you when not to use it.*
 
-Works with Custom GPTs, Claude Projects/Skills, and any chat context that supports custom instructions plus reference knowledge.
+**Prompt Mogging is not a tone preset. It's a controllable interaction mode — a behavioral QA layer you switch on for thinking-shaped work and off for everything else.**
 
-## The problem this solves
+> **Status:** v0.1.5 — early pilot. Works today; expect rough edges. Feedback wanted — see [Issues](../../issues).
+>
+> New in v0.1.5: a factuality floor for recent/unstable claims, namespaced controls, and a [`TUTORIAL.md`](./TUTORIAL.md) that doubles as a smoke test.
 
-You load a "thinking partner" skill or system prompt. The model says it's loaded. Then you ask a real question and get the same hedged, agreeable, frame-preserving answer it would have given without the skill. There is no visible behavioral delta — the skill is loaded in name only.
+---
 
-Prompt Mogging fixes this by:
+## What this is
 
-- Defaulting in-scope answers to **adversarial-but-constructive** (challenge weak frames, hidden assumptions, premature conclusions — while strengthening the user's best version).
-- Requiring a **visible delta** on substantial in-scope answers: at least one integrated move (frame check, hidden-assumption surfacing, stronger-claim rewrite, calibrated uncertainty, no-pill / not-yet).
-- Putting activation-critical rules in an always-in-context **NATIVE_CORE** rather than relying on retrieval, which can silently fail.
-- Forbidding **manufactured challenge** — fake-adversarial is as dishonest as fake-agreeable. If nothing's wrong, the skill says so explicitly.
+PROMPT_MOGGING is a set of instructions you load into an AI chat assistant (Claude, a custom GPT, or any equivalent). It doesn't bolt features onto the model — it changes how the assistant *behaves* in exploratory conversations. It asks the questions a good collaborator would ask, pushes back when your question is aimed at the wrong target, tells you when it's uncertain instead of bluffing, and points at where to go next.
 
-## Quick start
+It exists because experienced users already do these things by hand — they interrogate their own prompts, ask for a second opinion, reframe the problem before answering it. Most people don't, and don't know they're allowed to. This skill runs those moves for you, so you get power-user-grade conversation without learning the tricks.
 
-Two artifacts, two places:
+It is a **chat skill, not an agent.** It talks. It does not run code, browse, switch models, or do anything behind your back. Everything it does happens in the reply you can read.
 
-1. **`NATIVE_CORE.md`** → paste into your platform's custom/native instructions field (Custom GPT instructions, Claude Project instructions, etc.). This is the always-in-context activation core.
-2. **`SKILL.md`** → attach as knowledge / reference (Custom GPT knowledge files, Claude Project knowledge). This is the full canonical spec the model consults for detail.
+## What it's for — and what it isn't
 
-Do not rely on `SKILL.md` retrieval alone for activation. If the activation rules are only in retrievable knowledge, the skill can be "loaded" without ever firing.
+**Use it for** thinking-shaped work: exploring a problem, framing a decision, learning something new, diagnosing what's wrong, working out what you don't yet know.
 
-## Manual controls
+**Skip it for** routine execution: reformatting, extraction, lookups, mechanical edits. On those it's built to stay out of the way and let the assistant just do the task. Load it for that kind of work and it'll say so and stand down rather than clutter the answer.
 
-- `skill off` / `drop the skill` — hard dormant for the session.
-- `skill on` — resume.
-- `chill` / `ease up` / `simple mode` — soft suppression: keeps the honest floor and safety, drops adversarial push and footer offers.
-- `play` / `riff` / `what-if` — opt-in Play mode: divergence and speculation, honest spine still on.
+## It's opinionated on purpose
 
-Full control surface and detector behavior in [SKILL.md](SKILL.md).
+Read this part before you decide whether you'll like it.
 
-## What's in this repo
+PROMPT_MOGGING will sometimes **not** just do what you asked. It may say "not yet," or "that's the wrong question," or reframe your request, or tell you the honest answer is "it depends, and here's why." That isn't a malfunction — it's the point. An assistant that only ever agrees with you is the exact failure this is built to avoid.
 
-- [`SKILL.md`](SKILL.md) — canonical full specification (v0.1.4).
-- [`NATIVE_CORE.md`](NATIVE_CORE.md) — always-in-context activation core. Paste target for native instructions.
-- [`ACCEPTANCE_TESTS.md`](ACCEPTANCE_TESTS.md) — runnable checklist for activation reliability, no-nagware behavior, manufactured-challenge risk, and drift.
-- [`CHANGELOG.md`](CHANGELOG.md) — release notes.
-- [`PATCH_NOTES.md`](PATCH_NOTES.md) — patch rationale and insertion map (audit trail).
-- [`BUILD_MANIFEST.md`](BUILD_MANIFEST.md) — build contents and version sync status.
+If you don't want that for a given session — if you want straight compliance — turn it off:
 
-## Authority rule
-
-If `SKILL.md` and `NATIVE_CORE.md` conflict on activation behavior, `NATIVE_CORE.md` wins at runtime and the version must be resynced before release.
-
-## Build and validation
-
-`NATIVE_CORE.md` goes into Custom GPT Instructions, native Skill instructions, Project instructions, or the equivalent always-in-context instruction field. `SKILL.md` goes into Knowledge/reference as the full canonical specification.
-
-Do not rely on Knowledge/RAG alone for activation-critical behavior. Retrieved knowledge can be missed or decay across a long session, so the native core carries the behavior that must fire every turn.
-
-Run validation before tagging a release:
-
-```bash
-python scripts/validate_release.py
-python scripts/build_release.py
-python scripts/build_agent_skill.py
+```
+mog off            # stand down for the session (alias: skill off, in PM context)
+mog chill          # soften: stop pushing, keep the honesty floor
+mog on             # bring it back
 ```
 
-`build_release.py` regenerates `BUILD_MANIFEST.md` and creates `Prompt_Mogging_<version>_Release_Pack.zip`. `build_agent_skill.py` creates `dist/agent-skill/prompt-mogging/` for Agent Skills / Codex Skills discovery.
+The off switch is real and immediate. You are never trapped in it.
 
-Updating the Custom GPT UI remains manual unless/until OpenAI exposes an official GPT configuration API, or the user is using a supported Skills upload flow.
+## What it actually does
 
-## Status
+These appear only when they're relevant — usually as a one-line, ignorable footer with a quick **Yes / No / Love it / Loathe it** so it learns your taste for the session. They don't fire every turn, and declining one quiets it.
 
-**v0.1.4 — Activation Reliability Patch.** Built, version-synced, acceptance tests included. See [CHANGELOG.md](CHANGELOG.md) for the v0.1.3 → v0.1.4 delta.
+| Move | What it does |
+|---|---|
+| **Clarify first** | When your request is vague, offers the 2–5 questions worth answering before it guesses. |
+| **Frame check** | When answering as asked would send you down the wrong path, names the better question. Challenges once — if you keep your framing, it drops it. |
+| **Uncertainty, stated** | Flags what it doesn't know instead of sounding confident anyway. |
+| **Next steps, scored** | After a chunk of thinking, offers a few ranked ways forward. |
+| **Stronger review** | For high-stakes or checkable claims, suggests a second opinion, a stronger model, or how to verify — and if two sources disagree, treats the disagreement as the signal. |
+| **Simpler route** | If a task is the kind a cheaper or simpler tool handles fine, says so. |
+| **Play mode** | An explicit "let's just riff" gear where it stops judging and helps you generate. Enter with `play` or `riff`; leave when you want it critical again. |
+| **Challenge level / role** | Set how hard it pushes (gentle coach → blunt reviewer), or have it take a specific lens (skeptical CFO, confused newcomer, and so on). |
 
-## License
+## How to use it
 
-See [LICENSE](LICENSE).
+The skill ships as **two files** for a reason:
+
+- [`NATIVE_CORE.md`](./NATIVE_CORE.md) (~7,000 characters) — the activation core. This must sit in the assistant's **instructions** so it's reliably present every turn.
+- [`SKILL.md`](./SKILL.md) (~53,000 characters) — the full specification. This goes in **knowledge/reference**, consulted as needed.
+
+The split exists because activation rules can't depend on retrieval: if the whole skill lives only in a knowledge file, the assistant may not pull it into a given turn and silently reverts to generic mode. The core in the instructions box prevents that; the full file supplies the detail.
+
+**Claude — recommended, persists across chats**
+
+1. Create a Project (Claude Pro or Team).
+2. Paste the contents of `NATIVE_CORE.md` into the project's **Custom instructions** box.
+3. Upload `SKILL.md` to the project's **Knowledge**.
+4. Every chat in the project now runs the skill. (The core is ~7k and the instructions box caps near 8k, so it fits — but the box is shared with any instructions of your own, so you'll have little spare room.)
+
+**Custom GPT**
+
+1. In the GPT editor, open the **Configure** tab.
+2. Paste the contents of `NATIVE_CORE.md` into the **Instructions** field.
+3. Upload `SKILL.md` under **Knowledge**.
+4. Save. (The Instructions field is dedicated here, so the core fits comfortably — Custom GPT is the cleaner native home.)
+
+**Any chat, zero setup — Claude, ChatGPT, or other**
+
+Paste `NATIVE_CORE.md` at the top of a new conversation (add `SKILL.md` after it if you want the full detail). Works immediately but doesn't carry over — re-paste for each new chat. Best for trying the skill before committing to a Project or GPT.
+
+**Controls you can type anytime**
+
+```
+mog on · mog off · mog chill · mog play · floor back on
+```
+
+- **Canonical:** the `mog *` controls above. `floor back on` exits Play / loose ideation back to rigor.
+- **Aliases:** bare `play`, `riff`, `what-if`, `chill`, `ease up`, `simple mode`, and legacy `skill on` / `skill off` all still work when the context clearly means Prompt Mogging. In a multi-skill setup, generic `skill off` will ask which skill you mean.
+- `mog off` disables Prompt Mogging's behavior only. It never disables the base model's own safety or factuality behavior — that isn't part of this skill and can't be switched off by it.
+
+**New here? Run [`TUTORIAL.md`](./TUTORIAL.md)** — seven prompts, about five minutes, walks you through off → on → Play → floor → chill so you can see each mode switch. (It mirrors the test suite; [`ACCEPTANCE_TESTS.md`](./ACCEPTANCE_TESTS.md) is the authority if the two ever disagree.)
+
+## A quick taste
+
+
+> **You:** Help me pick a database for my app.
+>
+> **Assistant — frame check:** Before I answer that: "which database" is usually the wrong first question. The load-bearing one is your access pattern and scale — a choice that's right for 10k rows and read-heavy is wrong for 10M and write-heavy. Tell me roughly which world you're in and the database answer mostly falls out. Want the 3 questions that pin it down?
+
+That's the skill working: not the answer you asked for — the answer you needed.
+
+## What it can't do (on purpose)
+
+Being honest about limits is part of the design:
+
+- **It can't act.** No running code, no browsing, no calling other models, no automation. It suggests; you do.
+- **It can't remember** across sessions unless the host you run it in provides memory. By default, each chat starts fresh.
+- **It can't validate** anything for you. When it says "verify this," that's a prompt for *you* to check — not a claim that it did.
+- **It's only as good as the model underneath it.** It shapes behavior; it doesn't add intelligence.
+
+## Status & roadmap
+
+v0.1.5, early pilot. The move set is deliberately small — a handful that earn their place — rather than everything that was possible. Things parked for later (preferences that persist across sessions, a built-in "you're overdoing it" governor, voice-matching for drafts you'll publish, and more) are tracked in [Issues](../../issues).
+
+If something grates, misfires, or nags, that's the most useful feedback there is. Open an issue. The internal change history lives in [`CHANGELOG.md`](./CHANGELOG.md).
+
+## Where the name comes from
+
+The internal version of this skill uses deliberately ridiculous slang — "mogging," "no-pilling," "botmaxx" and friends — borrowed from the two essays it's based on. It's a joke that turned out to be load-bearing: the silly names made the techniques easy to reason about while building it. This user-facing version uses plain labels instead. If you enjoy internet-brainrot taxonomy, the originals are a fun read; if not, you lose nothing by ignoring them.
+
+- [40 Techniques for Mogging LLMs Without Getting Cooked](https://medium.com/@andrew.gregovic/40-techniques-for-mogging-llms-without-getting-cooked-feac634cd684)
+- [Prompt Engineering Considered Harmful, Lmao](https://medium.com/@andrew.gregovic/prompt-engineering-considered-harmful-lmao-f3325bed0ccf)
+
+## License & contributing
+
+> Apache-2.0; no bots contributing without manual review
+
+Contributions welcome. One part of the skill is explicitly built to grow by contribution: the **Simpler route** catalog (which task-shapes warrant a cheaper tool) is meant to be extended via PR as people hit real cases.

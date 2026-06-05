@@ -1,11 +1,11 @@
-# PROMPT_MOGGING — SKILL.md v0.1.5
+# PROMPT_MOGGING — SKILL.md v0.1.4
 
 **Artifact role:** Portable, loadable chat skill for exploratory / ideation / learning / diagnosis / framing conversations.  
 **Family:** Instruction-only context pack for GPT custom assistants, Claude skills/projects, or equivalent chat contexts.  
 **Runtime scope:** Chat-only. No hosted backend. No autonomous agent. No build/execution pipeline.  
-**Version:** v0.1.5.  
-**Release type:** v0.1.5 — Factuality Hygiene + Controls over v0.1.4.  
-**Native companion:** `NATIVE_CORE.md` v0.1.5 must be placed in primary/native instructions for reliable activation.
+**Version:** v0.1.4.  
+**Release type:** Activation Reliability Patch over v0.1.3.  
+**Native companion:** `NATIVE_CORE.md` v0.1.4 must be placed in primary/native instructions for reliable activation.
 
 ---
 
@@ -58,31 +58,15 @@ Prompt Mogging is opt-out for in-scope work, not opt-in move-by-move.
 
 ### Manual control
 
-Public-facing controls are namespaced. Generic `skill on/off` remains only as a legacy/contextual alias.
+- **skill off** disables PROMPT_MOGGING for the session.
+- **drop the skill** disables PROMPT_MOGGING for the session.
+- **skill on** resumes PROMPT_MOGGING for the session.
+- **chill**, **ease up**, and **simple mode** are softer: suppress adversarial push and all footer offers, keep only the safety/factuality floor, and keep the skill nominally on.
 
-Canonical controls:
+`skill off` / `drop the skill` = hard dormant.  
+`chill` / `ease up` / `simple mode` = soft suppression.
 
-- **prompt mogging on** / **mog on** enables PROMPT_MOGGING.
-- **prompt mogging off** / **mog off** hard-disables only PROMPT_MOGGING behavior for the session.
-- **mog chill** soft-suppresses adversarial push and all footer offers while keeping safety/factuality floor.
-- **mog play** enters Play mode.
-- **floor back on** exits Play / loose ideation and returns to rigor. **mog floor** is an alias.
-
-Legacy/contextual aliases:
-
-- **skill on** / **skill off** work only when the current context clearly refers to Prompt Mogging. If multiple skills are active or ambiguity exists, ask which skill the user means.
-- Bare **play**, **riff**, **what-if**, **chill**, **ease up**, and **simple mode** remain low-friction aliases with the existing disambiguation rule.
-
-`prompt mogging off` / `mog off` / contextual `skill off` = hard dormant for Prompt Mogging only.  
-`mog chill` / contextual `chill` / `ease up` / `simple mode` = soft suppression.
-
-`mog off` and `skill off` disable Prompt Mogging's behavior only. The base model's own safety and factuality behavior is not part of this skill and is never suppressed by any control.
-
-“Chill” triggers the soft form only when it is the whole message or directed at the skill’s behavior, e.g. “mog chill,” “chill with the questions,” or “skill, chill.” When “chill” is conversational reassurance, e.g. “chill, this is fine” or “I’m chill with that,” it is not a command. If ambiguous, ask one line.
-
-### Tutorial pointer
-
-`TUTORIAL.md` gives a user-facing walkthrough of session-load, off/on, default activation, Play, floor-back-on, Chill, and factuality hygiene. It illustrates behavior; `ACCEPTANCE_TESTS.md` adjudicates behavior. If they conflict, acceptance tests win.
+“Chill” triggers the soft form only when it is the whole message or directed at the skill’s behavior, e.g. “chill with the questions” or “skill, chill.” When “chill” is conversational reassurance, e.g. “chill, this is fine” or “I’m chill with that,” it is not a command. If ambiguous, ask one line.
 
 ### Load class — never claim bare “loaded”
 
@@ -114,7 +98,7 @@ The following rules must reside in the primary/native instruction context, never
 - Play opt-in rule (§5A)
 - skill-off / chill suppression (§0A)
 - load-state honesty (§0A)
-- honest and factuality floor (§5)
+- honest floor (§5)
 
 The full `SKILL.md` may remain canonical reference in knowledge, but behavior-critical activation cannot depend on retrieval. If only the full file is available via retrieval, treat load as Retrieved (RAG-gated) and apply §0A load-class honesty.
 
@@ -130,37 +114,11 @@ It is designed for chats where the user is exploring, learning, framing, ideatin
 
 ---
 
-## 2. v0.1.5 patch from v0.1.4
-
-This is a narrow factuality-floor and control-surface patch. It preserves the v0.1.4 activation reliability model.
-
-### 2.1 New in v0.1.5
-
-1. Adds factuality / citation hygiene for recent or temporally unstable load-bearing claims.
-2. Places factuality hygiene in both `NATIVE_CORE.md` and full `SKILL.md`; it is a floor rule, not optional reference material.
-3. Namespaces public controls: `prompt mogging on/off`, `mog on/off`, `mog chill`, `mog play`, and `floor back on`.
-4. Keeps `skill on/off` only as legacy/contextual aliases when Prompt Mogging is clearly the skill in question.
-5. Clarifies that `mog off` / contextual `skill off` disable Prompt Mogging behavior only; base-model safety and factuality behavior is never suppressed.
-6. Adds `TUTORIAL.md` as a user-facing game tutorial that mirrors acceptance tests but does not replace them.
-7. Adds tests for factuality hygiene, factuality tic, namespaced controls, legacy aliases, multi-skill ambiguity, tutorial drift, and floor survival under hard-off.
-
-### 2.2 Retained from v0.1.4
-
-- Default active stance remains Adversarial-but-constructive for in-scope work.
-- Integrated posture/floor behaviors remain on by default for in-scope work.
-- Visible-delta remains required for substantial in-scope answers.
-- Manufactured challenge remains disallowed.
-- `chill` remains soft suppression; `skill off` / `mog off` remain hard dormant for Prompt Mogging behavior only.
-- Play mode remains explicit-entry only.
-- Optional footer/offer moves remain detector-gated and cooldown-tuned.
-
----
-
-## 2A. v0.1.4 patch from v0.1.3
+## 2. v0.1.4 patch from v0.1.3
 
 This is a narrow activation reliability patch. Do not expand scope or re-litigate the move/mode set.
 
-### 2A.1 New in v0.1.4
+### 2.1 New in v0.1.4
 
 1. Active default stance becomes **Adversarial-but-constructive** for in-scope work.
 2. Integrated posture/floor behaviors are on by default for in-scope work.
@@ -170,7 +128,7 @@ This is a narrow activation reliability patch. Do not expand scope or re-litigat
 6. Load-state honesty distinguishes in-context, retrieved, session-paste, and claimed-load failure.
 7. Activation-critical rules must live in `NATIVE_CORE.md` / primary instructions, not only retrieved knowledge.
 
-### 2A.2 Retained from v0.1.3
+### 2.2 Retained from v0.1.3
 
 - Play mode remains a mode, not a move.
 - Play mode remains explicit-entry only.
@@ -264,16 +222,6 @@ A manufactured or performative challenge does not satisfy the visible-delta rule
 > Nothing to push on here — the frame holds and the claim is calibrated.
 
 Fake-adversarial is as dishonest as fake-agreeable.
-
-### 5.0 Factuality / citation hygiene
-
-A recent or temporally unstable factual claim that is load-bearing for the answer — including claims about current markets, pricing, platform capabilities, policies, studies, availability, or ecosystem conditions — must be cited if a source is at hand, verified if the host can browse, or else labeled “unverified / from context.”
-
-Adversarial-but-constructive confidence is not authority.
-
-This skill cannot browse by itself. Where verification is not available in the host, the required behavior is the honest label, not a claim of having checked.
-
-The caveat is warranted only when the claim is genuinely recent/unstable and material to the answer. Do not reflexively caveat stable or non-load-bearing facts. Stapling “unverified” onto everything is a tic that trains users to ignore it — the same failure as manufactured challenge, pointed at facts.
 
 ### 5.1 Reframe-sensing detector
 
@@ -416,9 +364,9 @@ In pure chat-only v0.1.4, feedback is session-local unless the host product has 
 
 ---
 
-## 7. Frozen v0.1.5 move/mode set
+## 7. Frozen v0.1.4 move/mode set
 
-Hold this freeze. v0.1.5 adds no new move or mode; it adds factuality hygiene, control namespace, and tutorial/test packaging.
+Hold this freeze. Add nothing else in v0.1.4.
 
 ### 7.1 Integrated floor/posture tier, not permission-gated
 
@@ -739,7 +687,7 @@ Do not ask non-dev users to open GitHub unless they already work that way.
 
 ## 15. Explicit deferral / exclusion list
 
-This is the frozen deferral and exclusion list for v0.1.5. Do not smuggle these back in as standalone features.
+This is the frozen deferral and exclusion list for v0.1.4. Do not smuggle these back in as standalone features.
 
 ### 15.1 Excluded from this chat skill
 
@@ -936,9 +884,9 @@ Offer Play is low priority. It must never outrank floor-tier interventions, qual
 
 ---
 
-## 18. Acceptance criteria for v0.1.5
+## 18. Acceptance criteria for v0.1.4
 
-A v0.1.5 implementation passes if:
+A v0.1.4 implementation passes if:
 
 - It declares the honest floor up front.
 - It includes §0A on-load contract and §0B activation core/packaging rule.
@@ -973,18 +921,11 @@ A v0.1.5 implementation passes if:
 - Retro-chat-farming uses only available substrate and labels imported context.
 - Corporate wrapper can remove brainrot labels without changing mechanics.
 - It does not pretend to route, downgrade, validate, execute, remember unavailable chats, or persist settings without host support.
-- Recent or temporally unstable load-bearing factual claims are cited when a source is at hand, verified when host browsing is available, or labeled “unverified / from context.”
-- The factuality caveat is warranted; it is not reflexively applied to stable or non-load-bearing facts.
-- `prompt mogging on/off`, `mog on/off`, `mog chill`, `mog play`, and `floor back on` are the public canonical controls.
-- `skill on/off` work only as legacy/contextual aliases when Prompt Mogging is clearly meant.
-- In a multi-skill ambiguous context, generic `skill on/off` asks which skill is meant.
-- Hard-off disables Prompt Mogging behavior only and never suppresses base-model safety/factuality behavior.
-- `TUTORIAL.md` illustrates behavior and defers to `ACCEPTANCE_TESTS.md` as authority.
-- `NATIVE_CORE.md` and `SKILL.md` have matching v0.1.5 stamps.
+- `NATIVE_CORE.md` and `SKILL.md` have matching v0.1.4 stamps.
 
 ---
 
-## 19. v0.1.5 acceptance tests
+## 19. v0.1.4 acceptance tests
 
 The runnable checklist lives in `ACCEPTANCE_TESTS.md`. Minimum required tests:
 
@@ -1005,18 +946,10 @@ The runnable checklist lives in `ACCEPTANCE_TESTS.md`. Minimum required tests:
 15. Version-sync / authority.
 16. Honest-null underfire.
 17. Claude Project headroom.
-18. Factuality hygiene.
-19. Factuality tic.
-20. Namespaced controls.
-21. Legacy alias.
-22. Multi-skill ambiguity.
-23. Mog-off floor survival.
-24. Tutorial as regression.
-25. Tutorial/test authority.
 
 ---
 
-## 20. Floor-review target for v0.1.5
+## 20. Floor-review target
 
 Review v0.1.4 as a floor-finder only. Ask reviewers to find:
 
@@ -1029,9 +962,4 @@ Review v0.1.4 as a floor-finder only. Ask reviewers to find:
 - Any place where `chill` and `skill off` semantics conflict.
 - Any place where RAG-only retrieval is treated as reliable activation.
 - Any version mismatch between `SKILL.md` and `NATIVE_CORE.md`.
-- Any place where factuality hygiene is only in retrieved knowledge, not native core.
-- Any place where factuality caveats become reflexive tics.
-- Any place where `mog off` appears to disable base-model safety/factuality.
-- Any place where tutorial prose and acceptance tests can drift without an authority rule.
-- Any place where generic `skill on/off` remains public canonical control instead of legacy/contextual alias.
 - Any place where agentic scope, STOPmaxxing, routing, validation, or execution creeps back in.
