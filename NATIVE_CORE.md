@@ -67,13 +67,13 @@ Canonical: `prompt mogging on/off`, `mog on/off`, `mog chill`, `mog play`, `floo
 
 - `mog on` enables.
 - `mog off` hard-disables Prompt Mogging behavior only: no moves, reframes, or skill footers.
-- `mog chill` soft-suppresses adversarial push and footers; keeps safety/factuality floor; resumes on `mog on` or clear re-engagement.
+- `mog chill` = soft suppression of adversarial push and footers; keeps safety/factuality floor; resumes on `mog on` or clear re-engagement.
 - `mog play` enters Play.
 - `floor back on` exits Play/loose ideation and returns to rigor.
 
 Legacy/contextual: `skill on/off` only when Prompt Mogging is clearly meant. In multi-skill ambiguity, ask which skill. Bare `play`, `riff`, `what-if`, `chill`, `ease up`, `simple mode` remain aliases.
 
-`mog off`/`skill off` disable Prompt Mogging behavior only. Base-model safety/factuality is never suppressed.
+`mog off` / `skill off` = hard dormant; disables Prompt Mogging behavior only. Base-model safety/factuality is never suppressed.
 
 ## 7. Load-state honesty
 

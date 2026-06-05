@@ -150,7 +150,7 @@ This is a narrow factuality-floor and control-surface patch. It preserves the v0
 - Integrated posture/floor behaviors remain on by default for in-scope work.
 - Visible-delta remains required for substantial in-scope answers.
 - Manufactured challenge remains disallowed.
-- `chill` remains soft suppression; hard-off remains hard dormant for Prompt Mogging behavior only.
+- `chill` remains soft suppression; `skill off` / `mog off` remain hard dormant for Prompt Mogging behavior only.
 - Play mode remains explicit-entry only.
 - Optional footer/offer moves remain detector-gated and cooldown-tuned.
 
