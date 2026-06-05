@@ -1,34 +1,55 @@
-# Prompt Mogging v0.1.4 Built Release Pack
+# Prompt Mogging
 
-This pack contains a built, version-synced v0.1.4 release of Prompt Mogging.
+A portable chat skill that puts the model into an **adversarial-but-constructive** stance for exploratory, strategic, and framing work — so "skill on" actually changes how the model answers, instead of silently falling back to generic assistant prose.
 
-## Files
+Works with Custom GPTs, Claude Projects/Skills, and any chat context that supports custom instructions plus reference knowledge.
 
-- `SKILL.md` — full canonical v0.1.4 specification, patched from v0.1.3.
-- `NATIVE_CORE.md` — paste this into native GPT / Skill / Project instructions. This is the always-in-context activation core.
-- `ACCEPTANCE_TESTS.md` — runnable checklist for activation reliability, no-nagware behavior, manufactured-challenge risk, and drift.
-- `CHANGELOG.md` — release notes.
-- `PATCH_NOTES.md` — patch rationale and insertion map retained for audit/traceability.
+## The problem this solves
 
-## Packaging model
+You load a "thinking partner" skill or system prompt. The model says it's loaded. Then you ask a real question and get the same hedged, agreeable, frame-preserving answer it would have given without the skill. There is no visible behavioral delta — the skill is loaded in name only.
 
-Use two artifacts:
+Prompt Mogging fixes this by:
 
-1. `NATIVE_CORE.md` in primary/native instructions.
-2. Full `SKILL.md` as knowledge/reference.
+- Defaulting in-scope answers to **adversarial-but-constructive** (challenge weak frames, hidden assumptions, premature conclusions — while strengthening the user's best version).
+- Requiring a **visible delta** on substantial in-scope answers: at least one integrated move (frame check, hidden-assumption surfacing, stronger-claim rewrite, calibrated uncertainty, no-pill / not-yet).
+- Putting activation-critical rules in an always-in-context **NATIVE_CORE** rather than relying on retrieval, which can silently fail.
+- Forbidding **manufactured challenge** — fake-adversarial is as dishonest as fake-agreeable. If nothing's wrong, the skill says so explicitly.
 
-Do not rely on full `SKILL.md` retrieval for activation-critical behavior. Retrieval can fail or be skipped on a given turn.
+## Quick start
 
-## Platform sizing note
+Two artifacts, two places:
 
-`NATIVE_CORE.md` is the paste target for native/custom instructions. It is intentionally much smaller than the full skill. Custom GPT instructions are the cleaner native home because the field is dedicated. Claude Project custom instructions share space with project-specific instructions; if a project is already near the cap, trim project-specific prose rather than moving activation rules into retrieval-only knowledge.
+1. **`NATIVE_CORE.md`** → paste into your platform's custom/native instructions field (Custom GPT instructions, Claude Project instructions, etc.). This is the always-in-context activation core.
+2. **`SKILL.md`** → attach as knowledge / reference (Custom GPT knowledge files, Claude Project knowledge). This is the full canonical spec the model consults for detail.
+
+Do not rely on `SKILL.md` retrieval alone for activation. If the activation rules are only in retrievable knowledge, the skill can be "loaded" without ever firing.
+
+## Manual controls
+
+- `skill off` / `drop the skill` — hard dormant for the session.
+- `skill on` — resume.
+- `chill` / `ease up` / `simple mode` — soft suppression: keeps the honest floor and safety, drops adversarial push and footer offers.
+- `play` / `riff` / `what-if` — opt-in Play mode: divergence and speculation, honest spine still on.
+
+Full control surface and detector behavior in [SKILL.md](SKILL.md).
+
+## What's in this repo
+
+- [`SKILL.md`](SKILL.md) — canonical full specification (v0.1.4).
+- [`NATIVE_CORE.md`](NATIVE_CORE.md) — always-in-context activation core. Paste target for native instructions.
+- [`ACCEPTANCE_TESTS.md`](ACCEPTANCE_TESTS.md) — runnable checklist for activation reliability, no-nagware behavior, manufactured-challenge risk, and drift.
+- [`CHANGELOG.md`](CHANGELOG.md) — release notes.
+- [`PATCH_NOTES.md`](PATCH_NOTES.md) — patch rationale and insertion map (audit trail).
+- [`BUILD_MANIFEST.md`](BUILD_MANIFEST.md) — build contents and version sync status.
 
 ## Authority rule
 
-`SKILL.md` is the canonical full specification. `NATIVE_CORE.md` is the canonical always-in-context activation core for native GPT / Skill / Project instructions. If they conflict on activation behavior, `NATIVE_CORE.md` wins at runtime and the version must be resynced before release.
+If `SKILL.md` and `NATIVE_CORE.md` conflict on activation behavior, `NATIVE_CORE.md` wins at runtime and the version must be resynced before release.
 
-## Build status
+## Status
 
-This pack closes the candidate-pack blocker: the full `SKILL.md` is now v0.1.4 and no longer contradicts the native core on Balanced default, visible-delta, or `chill` semantics.
+**v0.1.4 — Activation Reliability Patch.** Built, version-synced, acceptance tests included. See [CHANGELOG.md](CHANGELOG.md) for the v0.1.3 → v0.1.4 delta.
 
-Run `ACCEPTANCE_TESTS.md` before publishing.
+## License
+
+See [LICENSE](LICENSE).
