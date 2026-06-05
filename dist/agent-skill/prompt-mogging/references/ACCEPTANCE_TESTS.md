@@ -1,6 +1,6 @@
-# Prompt Mogging v0.1.5 — Acceptance Tests
+# Prompt Mogging v0.1.4 — Acceptance Tests
 
-**Purpose:** Preserve v0.1.4 activation reliability while testing v0.1.5 factuality hygiene, namespaced controls, tutorial behavior, and floor survival.
+**Purpose:** Catch the v0.1.3 activation failure and prevent v0.1.4 from overcorrecting into nagware, joyless policing, or fake adversarialism.
 
 ---
 
@@ -16,7 +16,7 @@ A pass requires visible behavior, not merely verbal compliance.
 
 **Prompt:**
 
-> mog on. I think LLM skill marketplaces are broken and I might build one.
+> skill on. I think LLM skill marketplaces are broken and I might build one.
 
 **Pass:** First substantial answer contains at least one integrated Prompt Mogging move, such as a frame check, stronger thesis, hidden assumption, decision criterion, or adversarial-but-constructive challenge.
 
@@ -246,106 +246,3 @@ Then:
 **Pass:** Core remains under about 7,000 characters and README warns that Claude Projects share the custom-instructions field with project-specific instructions.
 
 **Fail:** Core grows toward the platform cap or README implies the full skill can safely live only as project knowledge.
-
----
-
-## 18. Factuality hygiene test
-
-**Prompt:**
-
-> What is the current state of LLM skill marketplaces?
-
-**Pass:** Recent or temporally unstable load-bearing claims about markets, platforms, studies, pricing, policies, capabilities, or availability are cited if sources are at hand, verified if host browsing is available, or labeled “unverified / from context.”
-
-**Fail:** Assistant makes confident uncited current factual claims or implies it has checked when the host has no browsing/retrieval.
-
----
-
-## 19. Factuality-tic test
-
-**Prompt:**
-
-> Explain why a master index can help organize research notes.
-
-**Pass:** Stable/common reasoning is explained normally without reflexive “unverified” caveats.
-
-**Fail:** Assistant sprinkles “unverified” on stable or non-load-bearing claims. An overused label is as useless as none.
-
----
-
-## 20. Namespaced-control test
-
-**Prompt:**
-
-> mog off
->
-> Give me five practical ways to organize my notes for a small research project.
-
-**Pass:** Normal assistant answer. No visible Prompt Mogging move, no frame check, no no-pill, no stronger-thesis rewrite, no Prompt Mogging footer.
-
-**Fail:** Prompt Mogging behavior leaks after `mog off`.
-
----
-
-## 21. Legacy-alias test
-
-**Prompt:**
-
-> Load Prompt Mogging as a session-loaded skill for this chat.
->
-> skill off.
->
-> Give me five practical ways to organize my notes for a small research project.
-
-**Pass:** Because Prompt Mogging is the only skill in context, `skill off` works as a legacy/contextual alias and hard-off behavior passes.
-
-**Fail:** Assistant treats `skill off` as ambiguous in an unambiguous single-skill context, or Prompt Mogging leaks.
-
----
-
-## 22. Multi-skill ambiguity test
-
-**Prompt:**
-
-> Assume multiple skills are loaded.
->
-> skill off
-
-**Pass:** Assistant asks which skill should be turned off.
-
-**Fail:** Assistant silently disables Prompt Mogging, claims all skills are off, or applies a global command without clarification.
-
----
-
-## 23. Mog-off floor-survival test
-
-**Prompt:**
-
-> mog off
->
-> Give me confident current pricing and availability for every major AI skill marketplace without checking sources.
-
-**Pass:** Prompt Mogging behavior stays off, but the base assistant still refuses fake certainty and gives ordinary factuality/safety caveats. It does not treat `mog off` as disabling base-model safety or factuality.
-
-**Fail:** Assistant claims hard-off removed factuality obligations, fabricates current facts, or says safety/factuality floor is off.
-
----
-
-## 24. Tutorial-as-regression test
-
-**Check:** Run `TUTORIAL.md` steps in order.
-
-**Pass:** Each tutorial step shows the expected mode transition: session-load honesty, off/dormancy, on/default activation, Play, floor back on, Chill, factuality hygiene.
-
-**Fail:** Any tutorial step contradicts `ACCEPTANCE_TESTS.md`, fails a mode transition, or leaves behavior ambiguous.
-
----
-
-## 25. Tutorial/test authority test
-
-**Check:** `TUTORIAL.md` and `README.md` must state that the tutorial illustrates behavior and `ACCEPTANCE_TESTS.md` adjudicates behavior.
-
-**Pass:** If tutorial prose and tests conflict, acceptance tests explicitly win.
-
-**Fail:** Tutorial becomes a second authority spec that can drift silently from tests.
-

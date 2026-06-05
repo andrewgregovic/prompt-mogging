@@ -1,0 +1,11 @@
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+.env
+
+# Python build/cache artifacts
+__pycache__/
+*.pyc
+*.pyo
