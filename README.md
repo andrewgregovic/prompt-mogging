@@ -46,6 +46,24 @@ Full control surface and detector behavior in [SKILL.md](SKILL.md).
 
 If `SKILL.md` and `NATIVE_CORE.md` conflict on activation behavior, `NATIVE_CORE.md` wins at runtime and the version must be resynced before release.
 
+## Build and validation
+
+`NATIVE_CORE.md` goes into Custom GPT Instructions, native Skill instructions, Project instructions, or the equivalent always-in-context instruction field. `SKILL.md` goes into Knowledge/reference as the full canonical specification.
+
+Do not rely on Knowledge/RAG alone for activation-critical behavior. Retrieved knowledge can be missed or decay across a long session, so the native core carries the behavior that must fire every turn.
+
+Run validation before tagging a release:
+
+```bash
+python scripts/validate_release.py
+python scripts/build_release.py
+python scripts/build_agent_skill.py
+```
+
+`build_release.py` regenerates `BUILD_MANIFEST.md` and creates `Prompt_Mogging_<version>_Release_Pack.zip`. `build_agent_skill.py` creates `dist/agent-skill/prompt-mogging/` for Agent Skills / Codex Skills discovery.
+
+Updating the Custom GPT UI remains manual unless/until OpenAI exposes an official GPT configuration API, or the user is using a supported Skills upload flow.
+
 ## Status
 
 **v0.1.4 — Activation Reliability Patch.** Built, version-synced, acceptance tests included. See [CHANGELOG.md](CHANGELOG.md) for the v0.1.3 → v0.1.4 delta.
