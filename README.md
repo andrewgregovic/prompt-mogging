@@ -82,6 +82,21 @@ The split exists because activation rules can't depend on retrieval: if the whol
 
 Paste `NATIVE_CORE.md` at the top of a new conversation (add `SKILL.md` after it if you want the full detail). Works immediately but doesn't carry over — re-paste for each new chat. Best for trying the skill before committing to a Project or GPT.
 
+**Loading the skill (paste method specifics)**
+
+When you paste `SKILL.md` into a fresh chat with nothing else, the assistant will guess at intent — usually by producing an unsolicited review or analysis of the file. That isn't the skill misbehaving; it's the model trying to be helpful with the only signal it has. Two reliable patterns avoid it:
+
+- **Paste, then task on the next line.** Drop in `SKILL.md`, hit return, and write your actual task underneath. The task is the signal that the file is context, not the request.
+- **Paste, then explicit hold.** If you want to load now and ask later, end the paste with this line on its own:
+
+  ```
+  Loaded — acknowledge briefly and wait for my task.
+  ```
+
+  The assistant will confirm the load class and stop, instead of inventing work to do.
+
+Paste-load is **per-session and decays.** In long threads earlier context falls out of the window and the skill goes quiet without warning. If the behavioral delta disappears, start a fresh chat and re-paste. (Projects and Custom GPTs don't have this problem — that's why they're the recommended hosts.)
+
 **Controls you can type anytime**
 
 ```
