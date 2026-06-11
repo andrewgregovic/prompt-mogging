@@ -9,3 +9,6 @@ Thumbs.db
 __pycache__/
 *.pyc
 *.pyo
+
+# Release build output
+Prompt_Mogging_*_Release_Pack.zip

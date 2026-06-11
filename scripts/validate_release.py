@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Validate Prompt Mogging release artifacts before packaging."""
+"""Validate Prompt Mogging v0.2.x release artifacts before packaging.
+
+v0.2.x architecture:
+  - DISPATCHER_STUB.md lives in the platform/custom-instructions box.
+  - SKILL.md is the full semantic-rule runtime and carries the floor semantics.
+  - NATIVE_CORE.md is retired; only a tombstone remains under deprecated/.
+"""
 
 from __future__ import annotations
 
@@ -12,33 +18,38 @@ ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_FILES = [
     "SKILL.md",
-    "NATIVE_CORE.md",
-    "ACCEPTANCE_TESTS.md",
-    "CHANGELOG.md",
+    "DISPATCHER_STUB.md",
     "README.md",
+    "ACCEPTANCE_TESTS.md",
+    "TUTORIAL.md",
+    "CHANGELOG.md",
+    "PATCH_NOTES.md",
     "BUILD_MANIFEST.md",
 ]
 
+# NATIVE_CORE is retired. It must NOT be an active root artifact; the tombstone
+# lives under deprecated/ and must not be pasted as runtime instructions.
+RETIRED_ROOT_FILES = ["NATIVE_CORE.md"]
+TOMBSTONE = Path("deprecated") / "NATIVE_CORE.md"
+
 VERSION_RE = re.compile(r"v\d+\.\d+\.\d+")
-MAX_NATIVE_CORE_CHARS = 7000
-WARN_NATIVE_CORE_CHARS = 6500
+
+# Dispatcher stub body size gate. Convention: stub body only, excluding the
+# trailing newline and excluding the markdown fences/header.
+MAX_STUB_BODY_CHARS = 600
 
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def compact(text: str) -> str:
-    return re.sub(r"\s+", " ", text).casefold()
-
-
-def has_any(text: str, patterns: list[str]) -> bool:
-    return any(re.search(pattern, text, re.IGNORECASE | re.DOTALL) for pattern in patterns)
-
-
 def first_version(text: str) -> str | None:
     match = VERSION_RE.search(text)
     return match.group(0) if match else None
+
+
+def has_any(text: str, patterns: list[str]) -> bool:
+    return any(re.search(p, text, re.IGNORECASE | re.DOTALL) for p in patterns)
 
 
 def fail(errors: list[str], message: str) -> None:
@@ -49,54 +60,46 @@ def warn(warnings: list[str], message: str) -> None:
     warnings.append(f"WARNING: {message}")
 
 
-NATIVE_CORE_CONCEPTS: dict[str, list[str]] = {
-    "adversarial but constructive default": [
-        r"default[^.\n]*(?:adversarial[- ]but[- ]constructive|adversarial but constructive)",
-        r"default stance[^.\n]*adversarial",
-    ],
-    "in-scope activation": [
-        r"on by default[^.\n]*(?:exploratory|strategic|diagnostic|ideation|learning|research|framing)",
-        r"in[- ]scope activation",
-        r"opt[- ]out for in[- ]scope",
-    ],
-    "integrated posture/floor behaviors always active": [
-        r"integrated posture/floor behaviors are active",
-        r"always[- ]on integrated behaviors",
-    ],
-    "visible-delta rule": [r"visible[- ]delta rule"],
-    "no manufactured challenge / fake-adversarial guard": [
-        r"manufactured challenge",
-        r"fake[- ]adversarial",
-    ],
-    "honest-null rule": [
-        r"honest null",
-        r"nothing to push on here",
-    ],
-    "Play mode opt-in": [
-        r"play is off by default and explicit only",
-        r"play mode[^.\n]*(?:explicit|opt[- ]in)",
-    ],
-    "skill off hard dormancy": [
-        r"skill off[^.\n]*hard dormant",
-        r"skill off[^.\n]*disables",
-    ],
-    "chill soft suppression": [r"chill[^.\n]*soft suppression"],
-    "load-state honesty": [r"load[- ]state honesty"],
-    "retrieved/RAG-gated load warning": [
-        r"retrieved[^.\n]*rag[- ]gated",
-        r"rag[^.\n]*not guaranteed",
-        r"do not rely on rag",
-    ],
-}
+def stub_body(text: str) -> str | None:
+    """Return the fenced stub body, normalized to LF, trailing newline stripped."""
+    match = re.search(r"```md\s*\n(.*?)\n```", text, re.DOTALL)
+    if not match:
+        return None
+    return match.group(1).replace("\r\n", "\n").rstrip("\n")
 
 
+# Concepts that must be present in the full SKILL.md for a valid v0.2.x runtime.
 SKILL_CONCEPTS: dict[str, list[str]] = {
-    **NATIVE_CORE_CONCEPTS,
-    "canonical/native two-artifact authority": [
-        r"skill\.md[^.\n]*canonical full specification",
-        r"native_core\.md[^.\n]*canonical always[- ]in[- ]context activation core",
+    "dispatcher consult model": [r"dispatcher", r"silently consult"],
+    "loaded definition includes intent-to-govern": [r"intend(?:ed|s)?\s+to\s+govern"],
+    "fragments / review pastes are non-loading": [
+        r"are\s+not\s+loading",
+        r"do\s+\**not\**\s+constitute\s+loading",
     ],
+    "floor not suppressible by mog off while loaded": [r"not\s+suppressible"],
+    "Play ordinary-conversation guard": [r"ordinary\s+conversational"],
+    "Play commitment split": [r"rigor\s+split"],
+    "tag epistemics (best-effort, not causal proof)": [
+        r"not\s+causal\s+proof",
+        r"best-effort\s+attribution",
+    ],
+    "debug / diagnostic distinction": [r"\[pm-diagnostic\]"],
+    "compact PM_PREF memory format": [r"PM_PREF"],
+    "compact PM_REC recurrence format": [r"PM_REC"],
+    "factuality hygiene + tic guard": [r"tic\s+guard"],
+    "visible activation tags": [r"\[pm-[a-z*]+\]"],
 }
+
+# Floor-tier vocabulary that must NOT appear in the consult-only dispatcher stub.
+STUB_FORBIDDEN_FLOOR_TERMS = [
+    r"no-pill",
+    r"not-yet",
+    r"frame\s+check",
+    r"reframe",
+    r"confidence\s+calibration",
+    r"factuality",
+    r"play\s+mode",
+]
 
 
 def validate() -> tuple[list[str], list[str], str | None]:
@@ -111,74 +114,64 @@ def validate() -> tuple[list[str], list[str], str | None]:
             continue
         files[name] = read_text(path)
 
+    # NATIVE_CORE retirement checks.
+    for name in RETIRED_ROOT_FILES:
+        if (ROOT / name).is_file():
+            fail(errors, f"Retired artifact present at root: {name} (move to deprecated/)")
+    tombstone_path = ROOT / TOMBSTONE
+    if not tombstone_path.is_file():
+        fail(errors, f"Tombstone missing: {TOMBSTONE.as_posix()}")
+    else:
+        tombstone = read_text(tombstone_path)
+        if not has_any(tombstone, [r"retired", r"tombstone"]):
+            fail(errors, "deprecated/NATIVE_CORE.md does not mark itself retired/tombstoned")
+
     if errors:
         return errors, warnings, None
 
+    # Version stamp consistency across required files.
     skill_version = first_version(files["SKILL.md"])
     if not skill_version:
-        fail(errors, "SKILL.md does not contain a version string like v0.1.4")
+        fail(errors, "SKILL.md does not contain a version string like v0.2.3")
         return errors, warnings, None
 
     for name, text in files.items():
-        version = first_version(text)
-        if version != skill_version:
-            fail(
-                errors,
-                f"{name} first version stamp is {version or 'missing'}, expected {skill_version}",
-            )
         if skill_version not in text:
             fail(errors, f"{name} does not contain current version string {skill_version}")
 
-    native_core = files["NATIVE_CORE.md"]
-    native_chars = len(native_core)
-    if native_chars >= MAX_NATIVE_CORE_CHARS:
-        fail(
-            errors,
-            f"NATIVE_CORE.md is {native_chars} characters; must be under {MAX_NATIVE_CORE_CHARS}",
-        )
-    elif native_chars > WARN_NATIVE_CORE_CHARS:
-        warn(
-            warnings,
-            f"NATIVE_CORE.md is {native_chars} characters; over {WARN_NATIVE_CORE_CHARS} warning threshold",
-        )
+    # Dispatcher stub: size gate, no-floor gate, stub-only honesty.
+    stub = files["DISPATCHER_STUB.md"]
+    body = stub_body(stub)
+    if body is None:
+        fail(errors, "DISPATCHER_STUB.md has no fenced ```md stub body")
+    else:
+        if len(body) >= MAX_STUB_BODY_CHARS:
+            fail(
+                errors,
+                f"DISPATCHER_STUB.md body is {len(body)} chars; must be under {MAX_STUB_BODY_CHARS}",
+            )
+        for pattern in STUB_FORBIDDEN_FLOOR_TERMS:
+            if re.search(pattern, body, re.IGNORECASE):
+                fail(
+                    errors,
+                    f"DISPATCHER_STUB.md body contains floor content matching /{pattern}/ "
+                    "(stub must be consult-only, no floor)",
+                )
+        if not has_any(body, [r"not\s+loaded"]):
+            fail(errors, 'DISPATCHER_STUB.md does not define stub-only "not loaded" reporting')
 
-    for concept, patterns in NATIVE_CORE_CONCEPTS.items():
-        if not has_any(native_core, patterns):
-            fail(errors, f"NATIVE_CORE.md missing required concept: {concept}")
-
+    # SKILL.md concept coverage.
     skill = files["SKILL.md"]
     for concept, patterns in SKILL_CONCEPTS.items():
         if not has_any(skill, patterns):
             fail(errors, f"SKILL.md missing required concept: {concept}")
 
-    skill_flat = compact(skill)
-    if re.search(
-        r"(default active stance|active default|default stance)[^.\n]{0,120}balanced candor and collaboration",
-        skill,
-        re.IGNORECASE,
-    ):
-        fail(
-            errors,
-            'SKILL.md appears to restore old active default "Balanced candor and collaboration"',
-        )
-    chill_hard_disable = False
-    for line in skill.splitlines():
-        line_flat = line.casefold()
-        if "chill" not in line_flat:
-            continue
-        if "skill off" in line_flat or "drop the skill" in line_flat:
-            continue
-        if re.search(
-            r"hard dormant|hard disable|disables prompt_mogging|disables the skill|turns? the skill off",
-            line,
-            re.IGNORECASE,
-        ):
-            chill_hard_disable = True
-            break
-    if chill_hard_disable:
-        fail(errors, "SKILL.md appears to give chill hard-disable semantics")
-    if "visible-delta rule" not in skill_flat:
-        fail(errors, "SKILL.md missing visible-delta rule")
+    # README must describe the new architecture, not the retired core.
+    readme = files["README.md"]
+    if not has_any(readme, [r"DISPATCHER_STUB"]):
+        fail(errors, "README.md does not reference DISPATCHER_STUB.md")
+    if not has_any(readme, [r"NATIVE_CORE.*(?:retired|tombstone)", r"retired.*NATIVE_CORE"]):
+        warn(warnings, "README.md does not clearly mark NATIVE_CORE.md as retired")
 
     return errors, warnings, skill_version
 

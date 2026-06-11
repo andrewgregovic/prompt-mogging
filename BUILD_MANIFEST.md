@@ -1,6 +1,6 @@
 # Prompt Mogging v0.2.3 — Build Manifest
 
-**Build timestamp (UTC):** 2026-06-11T03:00:51Z
+**Build timestamp (UTC):** 2026-06-11T03:22:54Z
 **Release:** v0.2.3 — Dispatcher / Semantic Rule Runtime
 
 ## Files
@@ -8,7 +8,7 @@
 - `README.md` — 4827 chars — v0.2.3 stamp: YES — SHA-256: `1c7d1ccf986ca3c1cb2238ec72ffc548cb6e31af6358770a6b1a23061fd345a9`
 - `DISPATCHER_STUB.md` — 786 chars — v0.2.3 stamp: YES — SHA-256: `956be21b1a22a10359a0ba1cc1677e5af3e7ebbbfce8b5e22006c85aa48d3618`
 - `SKILL.md` — 53032 chars — v0.2.3 stamp: YES — SHA-256: `a458df74cec4e58842a327c276291e95d76e8247b6cb0e94ab56263b237720a1`
-- `NATIVE_CORE.md` — 832 chars — v0.2.3 stamp: YES — SHA-256: `e3b7ba28ea44a5e82df840f461a7574cd9c2a7b8b7fb421ce150c2acee067d5a`
+- `deprecated/NATIVE_CORE.md` — 832 chars — v0.2.3 stamp: YES — SHA-256: `e3b7ba28ea44a5e82df840f461a7574cd9c2a7b8b7fb421ce150c2acee067d5a`
 - `ACCEPTANCE_TESTS.md` — 8336 chars — v0.2.3 stamp: YES — SHA-256: `3807c33aa386e691e9d573efda5e66b2f459c3e85dd3bd9daf88b231bea22895`
 - `TUTORIAL.md` — 3882 chars — v0.2.3 stamp: YES — SHA-256: `99c9fc97654476e08c5e84bac025a1af303c18c3bd75daaeb55d61ff5a253f07`
 - `CHANGELOG.md` — 2466 chars — v0.2.3 stamp: YES — SHA-256: `eb0fd04299918cfb3453f65bfdf8eaefb6fc9bff6e12de8714bdeb517eac0acc`
