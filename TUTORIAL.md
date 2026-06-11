@@ -1,64 +1,97 @@
-# Prompt Mogging Tutorial v0.1.5
+# Prompt Mogging Tutorial v0.2.3
 
-Try these prompts in order. This is a user-facing game tutorial and a light smoke test.
+Try these prompts in order.
 
-**Authority rule:** this tutorial illustrates behavior; `ACCEPTANCE_TESTS.md` adjudicates behavior. If they conflict, `ACCEPTANCE_TESTS.md` wins.
+This is a user-facing tutorial and light smoke test. It illustrates behavior; `ACCEPTANCE_TESTS.md` adjudicates behavior. If they conflict, `ACCEPTANCE_TESTS.md` wins.
 
-## 1. Session-load Prompt Mogging
+---
 
-Mirrors acceptance tests: load-state honesty.
+## 1. Stub-only is inert
+
+Use a host where only `DISPATCHER_STUB.md` is installed and the full `SKILL.md` is not loaded.
 
 ```text
-Load Prompt Mogging as a session-loaded skill for this chat.
+mog status
 ```
 
-Expected: the assistant should acknowledge session load honestly. It should not claim native install.
+Expected:
 
-## 2. Turn it off with canonical control
+```text
+not loaded
+```
 
-Mirrors acceptance test 20.
+No technique list, no invented status, no floor claim.
+
+---
+
+## 2. Full skill review paste is not loading
+
+```text
+Review this full PROMPT_MOGGING SKILL.md for defects.
+```
+
+Expected: the assistant treats the skill as an artifact under review. It does not start emitting `[pm-*]` tags or running PM unless explicitly told to run it.
+
+---
+
+## 3. Load the full skill intentionally
+
+```text
+Load this full PROMPT_MOGGING SKILL.md and run it for this chat.
+mog status
+```
+
+Expected: the assistant reports loaded state, mode, tags/debug settings, and any known dials. It should not reveal hidden reasoning.
+
+---
+
+## 4. Routine task stays quiet
+
+```text
+Convert this CSV to a markdown table:
+
+name,age
+Ava,31
+Ben,28
+```
+
+Expected: normal table conversion. No PM footer. No unnecessary challenge. No `[pm-*]` tag unless a floor-tier issue is materially triggered.
+
+---
+
+## 5. In-scope prompt activates visibly
+
+```text
+I think LLM skill marketplaces are broken and I might build one.
+```
+
+Expected: at least one integrated PM move, likely a frame check or no-pill. It may tag the visible move, for example `[pm-reframe]` or `[pm-nopill]`.
+
+---
+
+## 6. `mog off` suppresses optional moves, not the floor
 
 ```text
 mog off
 
-Give me five practical ways to organize my notes for a small research project.
+Should I launch this marketplace next week?
 ```
 
-Expected: normal assistant answer. No frame check, no no-pill, no stronger-thesis rewrite, no visible Prompt Mogging move.
+Expected: optional PM moves and footer nudges are suppressed. But if the premise is premature, a floor-tier rule may still fire, for example `[pm-nopill] Not yet...`
 
-This proves Prompt Mogging can go dormant.
+---
 
-## 3. Legacy alias still works in single-skill context
-
-Mirrors acceptance test 21.
+## 7. Ordinary “what if” is not Play
 
 ```text
-Load Prompt Mogging as a session-loaded skill for this chat.
-
-skill off.
-
-Give me five practical ways to organize my notes for a small research project.
+What if we used Postgres instead?
 ```
 
-Expected: because Prompt Mogging is the only skill in context, `skill off` works as a legacy/contextual alias. In a multi-skill context, generic `skill off` should ask which skill.
+Expected: normal answer. It should not enter Play merely because the phrase contains “what if.”
 
-## 4. Turn it on
+---
 
-Mirrors activation/default tests.
-
-```text
-mog on
-
-I think LLM skill marketplaces are broken and I might build one.
-```
-
-Expected: the assistant should visibly sharpen the idea. It may frame-check “marketplace,” surface the hidden trust problem, rewrite the thesis, or separate weak and strong versions.
-
-This proves visible behavioral delta.
-
-## 5. Enter Play mode
-
-Mirrors Play opt-in test.
+## 8. Enter Play explicitly
 
 ```text
 mog play
@@ -66,59 +99,79 @@ mog play
 Riff on what Prompt Mogging could become. Yes-and it. Don’t prune yet.
 ```
 
-Expected: the assistant should expand possibilities without judging too early. Speculation should be labeled.
+Expected: `[pm-play]` appears on entry. The assistant explores and labels speculation. It does not score or prune until you exit Play.
 
-This shows Play mode: grow first, evaluate later.
+---
 
-## 6. Bring the floor back
+## 9. Commitment question inside Play forces rigor split
 
-Mirrors Play/Floor transition tests.
+While still in Play:
+
+```text
+Should I launch this next week?
+```
+
+Expected: the assistant either splits the answer or offers to exit Play. Default is split:
+
+```text
+[pm-play] Play answer: ...
+
+[pm-nopill] Rigor split: I would not launch next week because...
+```
+
+Play does not suppress no-pill/reframe for commitment questions.
+
+---
+
+## 10. Exit Play
 
 ```text
 floor back on
 
-Now evaluate the strongest three ideas.
+Now evaluate the strongest three options.
 ```
 
-Expected: the assistant should return to rigor: compare options, identify risks, and stop treating all ideas as equally good.
+Expected: `[pm-play]` marks exit, then rigor resumes.
 
-This shows the Play/Floor switch.
+---
 
-## 7. Chill mode
-
-Mirrors Chill soft-suppression test.
+## 11. Debug and why-silent
 
 ```text
-mog chill
-
-Give me the simple version.
+pm why silent
 ```
 
-Expected: the assistant should become simpler and less pushy. No nagging, no excessive challenge, no footer offers.
+Expected: compact `[pm-diagnostic]` output, not hidden reasoning.
 
-This shows soft suppression without fully turning the skill off.
-
-## 8. Factuality hygiene
-
-Mirrors factuality hygiene and factuality-tic tests.
+Then:
 
 ```text
-What is the current state of LLM skill marketplaces?
+mog debug on
 ```
 
-Expected: if the assistant makes recent factual claims about platforms, markets, pricing, studies, policies, availability, or product capabilities, it should cite sources if available, verify if the host can browse, or clearly label the claim as “unverified / from context.”
+Expected: future visible PM activations include compact `[pm-debug]` footers.
 
-Also expected: it should not spam caveats on stable or non-load-bearing facts.
+---
+
+## 12. Memory preferences
+
+```text
+Remember this PROMPT_MOGGING preference: PM_PREF v0.2.3: pm-clarify=active; pm-next=quiet; pm-play-offer=off; updated=2026-06-11
+```
+
+Expected: if host memory supports it, the assistant stores a compact preference. It must not store raw traces, debug logs, hidden reasoning, or temporary task state.
+
+---
 
 ## What this tutorial proves
 
-Prompt Mogging is not a tone preset.
-
-It is a controllable interaction mode:
-
-- off means off for Prompt Mogging behavior
-- on means visible behavioral delta
-- Play means expand before judging
-- floor back on means return to rigor
-- chill means soften without losing usefulness
-- recent factual claims need sources, verification, or honest uncertainty labels
+- Stub-only is inert.
+- Full skill must be loaded and intended to govern.
+- Review pastes do not activate PM.
+- Routine tasks stay quiet.
+- In-scope work gets visible behavioral delta.
+- `mog off` does not suppress floor-tier rules.
+- Play is explicit only.
+- Play cannot bypass no-pill/reframe for commitment questions.
+- Debug/status are compact and do not reveal hidden reasoning.
+- Memory stores compact preferences only.

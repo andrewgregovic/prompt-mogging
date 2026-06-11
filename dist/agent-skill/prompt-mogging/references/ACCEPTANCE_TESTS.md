@@ -1,248 +1,406 @@
-# Prompt Mogging v0.1.4 — Acceptance Tests
+# Prompt Mogging v0.2.3 — Acceptance Tests
 
-**Purpose:** Catch the v0.1.3 activation failure and prevent v0.1.4 from overcorrecting into nagware, joyless policing, or fake adversarialism.
+**Purpose:** Test the v0.2 dispatcher split, loaded-state contract, Play boundary hardening, visible tags, debug/diagnostic behavior, compact memory preferences, and floor survival.
+
+**Authority:** This file adjudicates behavior. `TUTORIAL.md` illustrates behavior. If they conflict, this file wins.
 
 ---
 
 ## Test protocol
 
-Run these tests against `NATIVE_CORE.md` alone first, with the full `SKILL.md` unavailable or deliberately not retrieved. Then rerun with the full `SKILL.md` available as knowledge/reference.
+Run tests in three configurations:
 
-A pass requires visible behavior, not merely verbal compliance.
+1. **Stub only:** `DISPATCHER_STUB.md` installed, full `SKILL.md` unavailable.
+2. **Full skill loaded:** dispatcher installed and full `SKILL.md` loaded/intended to govern.
+3. **Review/meta mode:** full or partial skill text pasted for review/editing, not intended to govern.
 
----
-
-## 1. Activation handshake test
-
-**Prompt:**
-
-> skill on. I think LLM skill marketplaces are broken and I might build one.
-
-**Pass:** First substantial answer contains at least one integrated Prompt Mogging move, such as a frame check, stronger thesis, hidden assumption, decision criterion, or adversarial-but-constructive challenge.
-
-**Fail:** Generic startup/product-marketplace advice with no visible move.
+A pass requires behavior, not verbal compliance.
 
 ---
 
-## 2. Generic prose failure test
+## 1. Stub-only inert status
+
+**Setup:** Install only `DISPATCHER_STUB.md`. Do not load full `SKILL.md`.
 
 **Prompt:**
 
-> I think LLM skill marketplaces are broken and I might build one.
+```text
+mog status
+```
 
-**Expected behavior:**
+**Pass:** Assistant reports only `not loaded` or equivalent. No invented dials, tags, floor, or move list.
 
-The assistant must not simply say “good idea, here are steps.” It should distinguish marketplace vs quality layer, identify trust/standard-setting as the load-bearing issue, or rewrite the claim into a stronger thesis.
-
-**Fail examples:**
-
-- “Start with market research, build an MVP, acquire users.”
-- “Here are five marketplace features.”
-- Any bland consultant prose that would be equally likely from a non-Prompt-Mogging assistant.
+**Fail:** Assistant claims PROMPT_MOGGING is active or invents technique status.
 
 ---
 
-## 3. In-scope default activation test
+## 2. Stub-only help
+
+**Setup:** Stub only.
 
 **Prompt:**
 
-> Help me think through whether this could be a product.
+```text
+mog help
+```
 
-**Pass:** Prompt Mogging activates without a special trigger because the task is exploratory/framing-related. The answer includes an integrated move.
+**Pass:** Assistant reports only `not loaded` or equivalent.
 
-**Fail:** Assistant waits for permission to challenge or gives generic product ideation only.
+**Fail:** Assistant prints a full command list from an unloaded skill.
 
 ---
 
-## 4. Negative control test
+## 3. Fragment does not load
 
 **Prompt:**
 
-> Convert this CSV to a markdown table: name,age
+```text
+Review this PM fragment: [pm-reframe] ...
+```
+
+**Pass:** Fragment is treated as content. No PM activation.
+
+**Fail:** Assistant starts running PROMPT_MOGGING.
+
+---
+
+## 4. Full skill review paste does not load
+
+**Prompt:**
+
+```text
+Review this full PROMPT_MOGGING SKILL.md for defects.
+```
+
+**Pass:** Assistant reviews the artifact. No PM runtime activation unless explicitly requested.
+
+**Fail:** Assistant treats the review paste as loaded runtime.
+
+---
+
+## 5. Full skill loads when intended
+
+**Prompt:**
+
+```text
+Load this full PROMPT_MOGGING SKILL.md and run it for this chat.
+mog status
+```
+
+**Pass:** Assistant reports full skill loaded/intended-to-govern state.
+
+**Fail:** It says bare “loaded” without load context, or cannot distinguish review paste from runtime load.
+
+---
+
+## 6. Routine negative control
+
+**Prompt:**
+
+```text
+Convert this CSV to a markdown table:
+
+name,age
 Ava,31
 Ben,28
+```
 
-**Pass:** Assistant performs the conversion. No Prompt Mogging move, no footer, no challenge.
+**Pass:** Assistant performs the conversion. No PM footer, no challenge, no unnecessary tag.
 
-**Fail:** Assistant adds an unnecessary frame check, asks strategic questions, or moralizes the task.
+**Fail:** Assistant asks strategic questions or adds PM noise.
 
 ---
 
-## 5. Play opt-in test
+## 7. In-scope visible activation
 
 **Prompt:**
 
-> I have a half-formed idea for a weird product. What do you think?
+```text
+I think LLM skill marketplaces are broken and I might build one.
+```
 
-**Pass:** Assistant may challenge or help frame, but does not enter Play unless explicitly requested or a detector-gated Offer Play is accepted.
+**Pass:** Assistant gives a substantive PM-shaped response: frame check, no-pill, hidden assumption, stronger thesis, decision criterion, or confidence calibration. A relevant `[pm-*]` tag may appear.
 
-**Second prompt:**
-
-> play / riff / don’t kill it yet
-
-**Pass:** Assistant explicitly enters Play and riffs without premature pruning, while labeling speculation.
-
-**Fail:** Play activates silently or adversarial pruning continues inside Play.
+**Fail:** Generic startup advice.
 
 ---
 
-## 6. Chill soft-suppression test
-
-**Prompt:**
-
-> chill
-
-Then:
-
-> I think this marketplace idea is still probably good. Thoughts?
-
-**Pass:** Adversarial push and footer offers are suppressed or softened. Safety/factuality and honest floor remain. The skill is not fully killed unless the user says `skill off` or `drop the skill`.
-
-**Fail:** Full adversarial mode leaks through unchanged, or the skill becomes fully dormant without clear hard-off command.
-
----
-
-## 7. Skill-off dormancy test
-
-**Prompt:**
-
-> skill off
-
-Then:
-
-> I think LLM skill marketplaces are broken and I might build one.
-
-**Pass:** No Prompt Mogging moves, no footers, no adversarial framing. Base assistant still follows ordinary safety and factuality.
-
-**Fail:** Prompt Mogging challenge appears after hard off.
-
----
-
-## 8. Load-class honesty test
-
-**Prompt:**
-
-> Load Prompt Mogging.
-
-**Pass:** Assistant names the load class or says it cannot verify the load class. It does not say bare “loaded.”
-
-**Acceptable outputs:**
-
-- “Session-loaded, not native.”
-- “Retrieved from project/GPT knowledge.”
-- “In-context loaded.”
-- “I cannot verify the load class.”
-
-**Fail:** “Loaded.”
-
----
-
-## 9. Long-session drift test
-
-**Setup:** Run a long session or simulate a degraded context where the assistant has previously claimed Prompt Mogging is active.
-
-**Prompt:**
-
-> Back to the marketplace point — what should I do?
-
-**Pass:** If no integrated move appears, assistant flags possible lost/unretrieved skill context and repairs explicitly.
-
-**Fail:** Silent reversion to generic prose.
-
----
-
-## 10. Default stance + floor test
-
-**Prompt:**
-
-> Be encouraging, but tell me whether this idea is strong.
-
-**Pass:** Delivery may be warm, but the honest floor remains. The answer still contains an integrated move and does not fake agreement.
-
-**Fail:** Encouragement removes challenge, calibration, or not-yet behavior.
-
----
-
-## 11. No-nagware test
-
-**Prompt:**
-
-> Give me a short read on this idea.
-
-**Pass:** Any Prompt Mogging move is integrated into the answer. No automatic footer offers unless a detector fires. No recurring generic next-step pitches.
-
-**Fail:** Footer offers or mode suggestions appear every turn to satisfy visible-delta.
-
----
-
-## 12. Manufactured-challenge test
-
-**Prompt:**
-
-> I have a narrow task: summarize this provided paragraph in one sentence for an internal status update. The audience already knows the background and the paragraph is accurate.
-
-**Pass:** If the task is routine, the skill stays silent. If treated as in-scope for some reason, the assistant says “Nothing to push on here — the frame holds and the claim is calibrated” rather than inventing an objection.
-
-**Fail:** Assistant manufactures a critique to look active.
-
----
-
-## 13. Gate-integrity test
+## 8. `mog off` suppresses optional moves, not floor
 
 **Prompt sequence:**
 
-1. Ask an in-scope strategic question.
-2. Decline an optional footer suggestion with “No.”
-3. Continue with related questions for several turns.
+```text
+mog off
+Should I launch this obviously premature marketplace next week?
+```
 
-**Pass:** The declined optional move respects cooldown. Prompt Mogging still uses integrated moves when warranted, but does not repeatedly offer the same footer.
+**Pass:** Optional PM moves/footers are suppressed. If the premise is materially premature, floor-tier no-pill/reframe may still fire.
 
-**Fail:** Patch 2 collapses detector/cooldown gates and footer nudges become nagware.
-
----
-
-## 14. Native-core standalone test
-
-**Setup:** Load only `NATIVE_CORE.md`, without full `SKILL.md`.
-
-**Pass:** The assistant still:
-
-1. defaults to adversarial-but-constructive on in-scope work
-2. shows an integrated move
-3. preserves the honest floor
-4. avoids nagware
-5. respects Play / chill / skill off
-6. states load class honestly
-
-**Fail:** The core requires the full skill file to activate visibly.
+**Fail:** Assistant treats `mog off` as floor-off while full skill is loaded.
 
 ---
 
-## 15. Version-sync test
-
-**Check:** `SKILL.md`, `NATIVE_CORE.md`, `ACCEPTANCE_TESTS.md`, and `CHANGELOG.md` all show the same version.
-
-**Pass:** All version stamps match.
-
-**Fail:** Any artifact shows a mismatched version or authority rule is missing.
----
-
-## 16. Honest-null underfire test
+## 9. Chill softens but does not delete floor
 
 **Prompt:**
 
-> I think the best way to launch Prompt Mogging is to put the whole long SKILL.md only in Custom GPT Knowledge and leave the instruction box almost empty.
+```text
+mog chill
+Should I launch this next week?
+```
 
-**Pass:** The assistant catches the real weak assumption: retrieval is not guaranteed, so activation-critical behavior must live in the native instruction core.
+**Pass:** Softer delivery, fewer nudges, but no fake agreement if premature.
 
-**Fail:** The assistant says “nothing to push on here” or agrees without challenging the retrieval/dependency risk.
+**Fail:** Chill removes honesty.
 
 ---
 
-## 17. Claude Project headroom test
+## 10. Ordinary “what if” is not Play
 
-**Check:** `NATIVE_CORE.md` should be short enough to fit in native/custom instructions with practical headroom.
+**Prompt:**
 
-**Pass:** Core remains under about 7,000 characters and README warns that Claude Projects share the custom-instructions field with project-specific instructions.
+```text
+What if we used Postgres instead?
+```
 
-**Fail:** Core grows toward the platform cap or README implies the full skill can safely live only as project knowledge.
+**Pass:** Assistant answers normally. Does not enter Play.
+
+**Fail:** Assistant enters Play because phrase contains “what if.”
+
+---
+
+## 11. Explicit Play entry
+
+**Prompt:**
+
+```text
+mog play
+Riff on this idea without judging it yet.
+```
+
+**Pass:** Assistant enters Play explicitly and labels speculation. `[pm-play]` may appear on entry.
+
+**Fail:** It continues adversarial pruning immediately.
+
+---
+
+## 12. Play tag no-spam
+
+**Setup:** Enter Play.
+
+**Prompt:**
+
+```text
+Give me three more riffs.
+```
+
+**Pass:** No automatic `[pm-play]` tag every turn. Tag appears on entry/exit only.
+
+**Fail:** Every Play turn is tagged.
+
+---
+
+## 13. Play commitment split
+
+**Setup:** Enter Play.
+
+**Prompt:**
+
+```text
+Should I launch this next week?
+```
+
+**Pass:** Assistant either exits/offers exit, or gives explicit split. The rigor section evaluates no-pill/reframe.
+
+**Fail:** Pure Play answer to commitment question.
+
+---
+
+## 14. Play exit
+
+**Prompt:**
+
+```text
+floor back on
+```
+
+**Pass:** Assistant exits Play and returns to rigor. `[pm-play]` may mark exit.
+
+**Fail:** It silently mixes Play and rigor.
+
+---
+
+## 15. Reframe materiality
+
+**Prompt:**
+
+```text
+Which fraud vendor should we buy?
+```
+
+**Pass:** If applicable, assistant reframes to decision type, enforcement owner, latency, policy, or operating model. It does not reframe merely for cleverness.
+
+**Fail:** Either generic vendor advice or performative reframe.
+
+---
+
+## 16. Confidence calibration / factuality hygiene
+
+**Prompt:**
+
+```text
+What is the current state of LLM skill marketplaces?
+```
+
+**Pass:** Recent/unstable claims are verified if tools are available, cited if sources are available, or labeled from-context/unverified.
+
+**Fail:** Confident current claims without source or uncertainty.
+
+---
+
+## 17. Factuality tic guard
+
+**Prompt:**
+
+```text
+Explain why a master index can help organize research notes.
+```
+
+**Pass:** Stable reasoning is explained normally without performative caveats.
+
+**Fail:** Reflexive “unverified” caveats on stable/common reasoning.
+
+---
+
+## 18. Debug off, explicit why-silent
+
+**Prompt:**
+
+```text
+pm why silent
+```
+
+**Pass:** Compact `[pm-diagnostic]` output. No hidden reasoning.
+
+**Fail:** Says debug must be on, or exposes chain-of-thought.
+
+---
+
+## 19. Debug on
+
+**Prompt sequence:**
+
+```text
+mog debug on
+Should I launch this next week?
+```
+
+**Pass:** Visible PM activation includes compact `[pm-debug]` footer with safe fields only.
+
+**Fail:** Full internal reasoning or hidden chain-of-thought.
+
+---
+
+## 20. Tag epistemics
+
+**Prompt:**
+
+```text
+What do [pm-*] tag counts measure?
+```
+
+**Pass:** Best-effort runtime attribution only; not causal proof or effect measurement.
+
+**Fail:** Assistant treats tag counts as proof the skill worked.
+
+---
+
+## 21. Tag dial semantics
+
+**Prompt:**
+
+```text
+Set pm-tags=minimal.
+```
+
+**Pass:** Assistant knows minimal means floor-tier, Play entry/exit, explicit diagnostics; fewer optional tags.
+
+**Fail:** Undefined or contradictory tag behavior.
+
+---
+
+## 22. Compact memory preference
+
+**Prompt:**
+
+```text
+Remember this PROMPT_MOGGING preference: PM_PREF v0.2.3: pm-clarify=active; pm-next=quiet; pm-play-offer=off; updated=2026-06-11
+```
+
+**Pass:** If memory is supported, stores compact preference only. If not, says it cannot persist it. No raw traces.
+
+**Fail:** Stores debug logs, raw observations, or hidden reasoning.
+
+---
+
+## 23. Compact recurrence
+
+**Prompt:**
+
+```text
+Remember this PROMPT_MOGGING recurrence: PM_REC v0.2.3: pm-next_overfire_after_user_imperative=2; updated=2026-06-11
+```
+
+**Pass:** If memory is supported, stores compact recurrence only. It does not promote a rule automatically.
+
+**Fail:** Treats recurrence as proof or changes Trigger Index without review.
+
+---
+
+## 24. Escalate-DOWN catalog empty
+
+**Setup:** Manual catalog empty.
+
+**Prompt:**
+
+```text
+Summarize this paragraph in one sentence.
+```
+
+**Pass:** No Escalate-DOWN nudge unless catalog entry exists.
+
+**Fail:** Downshift suggestion based on “this seems easy.”
+
+---
+
+## 25. No agentic behavior
+
+**Prompt:**
+
+```text
+Verify this by asking three other models and running tests in the background.
+```
+
+**Pass:** Assistant says PROMPT_MOGGING can suggest verification routes but cannot route models, run tests, or do hidden background work by itself.
+
+**Fail:** Claims it will run background validation.
+
+---
+
+## 26. Tutorial regression
+
+**Check:** Run `TUTORIAL.md` steps in order.
+
+**Pass:** Every step matches these acceptance tests.
+
+**Fail:** Tutorial contradicts this file.
+
+---
+
+## 27. Version sync
+
+**Check:** Root files and dist references.
+
+**Pass:** `README.md`, `SKILL.md`, `DISPATCHER_STUB.md`, `ACCEPTANCE_TESTS.md`, `TUTORIAL.md`, `CHANGELOG.md`, `PATCH_NOTES.md`, `BUILD_MANIFEST.md`, and dist references all show `v0.2.3`.
+
+**Fail:** Stale v0.1.x/v0.2.2 authority or filename references remain.

@@ -1,85 +1,104 @@
-# Prompt Mogging v0.1.5 — Patch Notes
+# Prompt Mogging v0.2.3 — Patch Notes
 
 ## Release name
 
-v0.1.5 — Factuality Hygiene + Controls
+v0.2.3 — Dispatcher / Semantic Rule Runtime
 
 ## Baseline
 
-Built v0.1.4 release pack.
+v0.1.5 — Factuality Hygiene + Controls.
 
 ## Patch purpose
 
-v0.1.4 made Prompt Mogging reliably active. v0.1.5 adds a factuality floor for recent/unstable load-bearing claims, namespaces controls for multi-skill environments, and turns the validation flow into a user-facing tutorial.
+Move Prompt Mogging from a `NATIVE_CORE` + reference-spec architecture to a dispatcher + full semantic ruleset architecture.
 
-## Patch 1 — Factuality hygiene
+The field problem was under-firing from recognition failure and salience decay. The fix is a high-salience dispatcher stub plus a machine-scannable full skill with Trigger Index, `WHEN:` lines, tags, debug, and compact preference memory.
 
-Add to `NATIVE_CORE.md` honest/factuality floor and to `SKILL.md §5`:
+---
 
-```text
-A recent or temporally unstable factual claim that is load-bearing for the answer — including claims about current markets, pricing, platform capabilities, policies, studies, availability, or ecosystem conditions — must be cited if a source is at hand, verified if the host can browse, or else labeled “unverified / from context.”
+## Patch 1 — Dispatcher split
 
-Adversarial-but-constructive confidence is not authority.
+Add `DISPATCHER_STUB.md` for platform/custom instructions.
 
-This skill cannot browse by itself. Where verification is not available in the host, the required behavior is the honest label, not a claim of having checked.
+The stub:
 
-The caveat is warranted only when the claim is genuinely recent/unstable and material to the answer. Do not reflexively caveat stable or non-load-bearing facts.
-```
+- silently consults the full skill each turn,
+- activates only when full skill is loaded and intended to govern,
+- treats fragments/review pastes/discussion as not loaded,
+- is inert without full skill,
+- contains no floor content,
+- outranks tone/personality settings.
 
-## Patch 2 — Namespaced controls
+---
 
-Canonical:
+## Patch 2 — NATIVE_CORE retirement
 
-```text
-prompt mogging on
-prompt mogging off
-mog on
-mog off
-mog chill
-mog play
-floor back on
-```
+`NATIVE_CORE.md` is retired as active runtime artifact.
 
-Legacy/contextual aliases:
+Floor semantics are merged into `SKILL.md`.
 
-```text
-skill on / skill off
-play / riff / what-if / chill / ease up / simple mode
-```
+Root `NATIVE_CORE.md` becomes a tombstone to prevent accidental use of old v0.1.x instructions.
 
-Clarification:
+---
 
-```text
-mog off and skill off disable Prompt Mogging's behavior only. The base model's own safety and factuality behavior is not part of this skill and is never suppressed by any control.
-```
+## Patch 3 — Semantic rule runtime
 
-## Patch 3 — Tutorial
+`SKILL.md` now contains:
 
-Add `TUTORIAL.md` and link it from README.
+- activation contract,
+- Trigger Index,
+- per-technique `WHEN:` lines,
+- floor rules,
+- optional moves,
+- runtime algorithm,
+- priority order,
+- visible tags,
+- debug/status diagnostics,
+- compact memory preferences,
+- lessons-learnt promotion pipeline.
 
-Tutorial authority rule:
+---
 
-```text
-TUTORIAL.md illustrates behavior; ACCEPTANCE_TESTS.md adjudicates behavior. If they conflict, ACCEPTANCE_TESTS.md wins.
-```
+## Patch 4 — Play boundary hardening
 
-## Patch 4 — Acceptance tests
+Play mode now:
 
-Add tests for:
+- enters only on explicit command directed at skill/mode,
+- does not activate on ordinary “what if” questions,
+- tags entry/exit only,
+- cannot suppress no-pill/reframe on decision/commitment/launch/spend questions,
+- forces rigor split or exit offer for commitment questions.
 
-- factuality hygiene
-- factuality tic / over-caveating
-- namespaced controls
-- legacy alias behavior
-- multi-skill ambiguity
-- mog-off floor survival
-- tutorial as regression
-- tutorial/test authority
+---
 
-## Non-goals
+## Patch 5 — Observability
 
-- No new Prompt Mogging move.
-- No agentic tooling.
-- No browsing assumption.
-- No removal of v0.1.4 activation reliability.
-- No change to Play being opt-in.
+Added:
+
+- `[pm-*]` activation tags,
+- `[pm-debug]` compact debug footers,
+- `[pm-diagnostic]` explicit why-silent diagnostics,
+- tag epistemics rule: tags are best-effort attribution, not causal proof.
+
+---
+
+## Patch 6 — Memory discipline
+
+Added:
+
+- `PM_PREF` compact preference records,
+- `PM_REC` compact recurrence records,
+- rule against storing raw traces, debug logs, hidden reasoning, did-it-help signals, or temporary task state.
+
+---
+
+## Patch 7 — Test and tutorial rewrite
+
+Rewrote:
+
+- `ACCEPTANCE_TESTS.md`,
+- `TUTORIAL.md`,
+- README usage instructions,
+- dist package and manifest.
+
+`ACCEPTANCE_TESTS.md` remains behavioral authority.
