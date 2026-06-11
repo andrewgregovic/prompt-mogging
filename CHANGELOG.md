@@ -1,53 +1,76 @@
-# Prompt Mogging — CHANGELOG v0.1.5
+# Prompt Mogging — CHANGELOG v0.2.3
 
-## v0.1.5 — Factuality Hygiene + Controls
+## v0.2.3 — Dispatcher / Semantic Rule Runtime
 
-**Status:** Candidate release pack for review.  
-**Baseline:** v0.1.4 Activation Reliability Patch.  
-**Release type:** Narrow floor/control/tutorial patch.
+**Status:** repo-ready release candidate.  
+**Release type:** structural architecture release.
 
 ### Why this release exists
 
-v0.1.4 fixed activation reliability. Testing then surfaced two product-level improvements and one floor issue:
+v0.1.x improved activation reliability by putting `NATIVE_CORE.md` in primary instructions. Field testing then showed a different problem: technique behavior still under-fired because the long skill text lost salience and technique descriptions underspecified when to fire.
 
-1. The skill could make current market/platform/study claims without citations or uncertainty labels.
-2. `skill on/off` is too generic for a multi-skill environment.
-3. The smoke-test sequence is useful as a user-facing tutorial.
+v0.2.3 moves to a dispatcher / semantic-ruleset architecture:
 
-### Changed
+```text
+DISPATCHER_STUB.md in platform instructions
++
+full SKILL.md loaded and intended to govern
+```
 
-- Added factuality / citation hygiene for recent or temporally unstable load-bearing claims.
-- Put factuality hygiene in both `NATIVE_CORE.md` and full `SKILL.md`; it is a floor rule, not optional reference material.
-- Added a no-tic guard: do not reflexively caveat stable or non-load-bearing facts.
-- Namespaced public controls: `prompt mogging on/off`, `mog on/off`, `mog chill`, `mog play`, `floor back on`.
-- Kept `skill on/off` as legacy/contextual aliases only.
-- Clarified that hard-off disables Prompt Mogging behavior only and never disables base-model safety/factuality.
-- Added `TUTORIAL.md` as a user-facing game tutorial and smoke-test walkthrough.
-- Added tutorial/test authority rule: tutorial illustrates; acceptance tests adjudicate.
-- Added v0.1.5 acceptance tests.
+### Major changes
+
+- Retired `NATIVE_CORE.md` as active artifact.
+- Merged floor semantics into `SKILL.md`.
+- Added `DISPATCHER_STUB.md`.
+- Defined loaded state: full skill file + activation header/contract + intended to govern.
+- Made fragments, quotes, diffs, review pastes, and discussion non-loading.
+- Added Trigger Index and `WHEN:` lines.
+- Added visible `[pm-*]` activation tags.
+- Added tag epistemics: tags are best-effort attribution, not causal proof.
+- Added `mog help`, `mog status`, `pm why silent`, and debug controls.
+- Added `[pm-diagnostic]` for explicit why-silent diagnostics.
+- Added compact memory preference format: `PM_PREF`.
+- Added compact recurrence format: `PM_REC`.
+- Added lessons-learnt promotion pipeline.
+- Hardened Play mode:
+  - ordinary “what if” does not enter Play,
+  - Play enters only on explicit command directed at skill/mode,
+  - `[pm-play]` tags entry/exit only,
+  - decision/commitment/launch/spend questions inside Play force rigor split or exit offer.
 
 ### Preserved
 
-- v0.1.4 activation reliability.
-- Adversarial-but-constructive default for in-scope work.
-- Visible-delta rule.
-- No manufactured challenge.
-- No-nagware / detector-gated footer model.
-- Play remains opt-in.
-- Chill remains soft suppression.
 - Chat-only/no-agent boundary.
+- No automatic routing or model switching.
+- No hidden background work.
+- No executable validation.
+- No chain-of-thought exposure.
+- Detector-gated optional moves.
+- Escalate-DOWN manual catalog only.
+- Factuality hygiene + tic guard.
 
-### Review gates before publishing
+### Changed degradation model
 
-- Factuality hygiene appears in `NATIVE_CORE.md` and `SKILL.md`.
-- Native core remains within practical instruction-size limits.
-- `mog off` floor-survival test passes.
-- Factuality hygiene and factuality-tic tests both pass.
-- Tutorial matches acceptance tests and defers to them.
-- All version stamps match v0.1.5.
+v0.1.x degraded with some floor behavior still in `NATIVE_CORE.md`.
 
----
+v0.2.3 degrades differently:
 
-## v0.1.4 — Activation Reliability Patch
+- stub + full `SKILL.md` loaded = full PM behavior,
+- stub only = inert,
+- review/meta paste = not loaded.
 
-See prior release for full notes. v0.1.4 fixed the failure where Prompt Mogging could be “loaded” or turned on without visible behavioral delta.
+This is intentional and documented.
+
+### Required migration
+
+Replace root and dist artifacts:
+
+- `README.md`
+- `DISPATCHER_STUB.md`
+- `SKILL.md`
+- `NATIVE_CORE.md` tombstone
+- `ACCEPTANCE_TESTS.md`
+- `TUTORIAL.md`
+- `PATCH_NOTES.md`
+- `BUILD_MANIFEST.md`
+- `dist/agent-skill/prompt-mogging/*`
